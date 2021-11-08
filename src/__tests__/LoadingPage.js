@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import { screen } from "@testing-library/dom"
 import LoadingPage from "../views/LoadingPage.js"
 

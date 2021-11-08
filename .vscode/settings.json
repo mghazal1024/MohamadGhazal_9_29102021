@@ -1,0 +1,3 @@
+{
+    "jest.jestCommandLine": "jest src/__tests__/Bills.js"
+}

@@ -19,8 +19,18 @@ const row = (bill) => {
     `)
   }
 
+// validate date
+const isValidDate = (date) => {
+  return (new Date(date) !== "Invalid Date") && !isNaN(new Date(date));
+}
+
+// render sorted and validated date
 const rows = (data) => {
-  return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
+  const filteredData = data.filter(d => isValidDate(d.date));
+  let sortedData = filteredData.sort((a, b) => {
+    return new Date(b.date) - new Date(a.date);
+  })
+  return (sortedData && sortedData.length) ? sortedData.map(bill => row(bill)).join("") : ""
 }
 
 export default ({ data: bills, loading, error }) => {
