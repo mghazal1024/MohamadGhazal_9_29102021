@@ -27,10 +27,10 @@ const isValidDate = (date) => {
 // render sorted and validated date
 const rows = (data) => {
   const filteredData = data.filter(d => isValidDate(d.date));
-  let sortedData = filteredData.sort((a, b) => {
+  let datesSorted = filteredData.sort((a, b) => {
     return new Date(b.date) - new Date(a.date);
   })
-  return (sortedData && sortedData.length) ? sortedData.map(bill => row(bill)).join("") : ""
+  return (datesSorted && datesSorted.length) ? datesSorted.map(bill => row(bill)).join("") : ""
 }
 
 export default ({ data: bills, loading, error }) => {
