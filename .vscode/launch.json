@@ -23,7 +23,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/src/__tests__/Bills.js"
+            "program": "${workspaceFolder}/src/__tests__/"
         },
         {
             "type": "node",
@@ -35,7 +35,7 @@
             "program": "${workspaceFolder}/jest",
             "cwd": "${workspaceFolder}",
             "args": [
-                "src/__tests__/Bills.js",
+                "src/__tests__/",
                 "--runInBand",
                 "--watchAll=false"
             ]
