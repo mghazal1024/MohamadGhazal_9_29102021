@@ -35,6 +35,7 @@ export default class Login {
   handleSubmitAdmin = e => {
     const user = {
       type: "Admin",
+      // changed to recognize the admin as user
       email: e.target.querySelector(`input[data-testid="admin-email-input"]`).value,
       password: e.target.querySelector(`input[data-testid="admin-password-input"]`).value,
       status: "connected"
@@ -46,7 +47,7 @@ export default class Login {
     this.onNavigate(ROUTES_PATH['Dashboard'])
     this.PREVIOUS_LOCATION = ROUTES_PATH['Dashboard']
     PREVIOUS_LOCATION = this.PREVIOUS_LOCATION
-    document.body.style.backgroundColor="#fff"
+    this.document.body.style.backgroundColor="#fff"
   }
 
   // not need to cover this function by tests
