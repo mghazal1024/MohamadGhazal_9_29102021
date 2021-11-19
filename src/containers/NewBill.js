@@ -15,19 +15,54 @@ export default class NewBill {
     this.fileName = null
     new Logout({ document, localStorage, onNavigate })
   }
+  // handleChangeFile = e => {
+  //   const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+  //   const filePath = e.target.value.split(/\\/g)
+  //   const fileName = filePath[filePath.length-1]
+  //   this.firestore
+  //     .storage
+  //     .ref(`justificatifs/${fileName}`)
+  //     .put(file)
+  //     .then(snapshot => snapshot.ref.getDownloadURL())
+  //     .then(url => {
+  //       this.fileUrl = url
+  //       this.fileName = fileName
+  //     })
+  // }
+
+  // function to handle the file format
   handleChangeFile = e => {
-    const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+    let file = this.document.querySelector(`input[data-testid="file"]`);
+    file = file.files[0];
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
-    this.firestore
-      .storage
-      .ref(`justificatifs/${fileName}`)
-      .put(file)
-      .then(snapshot => snapshot.ref.getDownloadURL())
-      .then(url => {
-        this.fileUrl = url
-        this.fileName = fileName
-      })
+    const fileExtension = [
+      'jpg',
+      'jpeg',
+      'png'
+    ];
+    const extension = fileName.split('.').pop().toLowerCase();
+    const ValidExtension = fileExtension.indexOf(extension);
+    const btnSendBill = this.document.querySelector('#btn-send-bill');
+
+    if(ValidExtension === -1) {
+      btnSendBill.style.display = 'none';
+      alert("Il faul que l'image de justificatif être de format jpg, jpeg ou png !");
+    } else {
+      btnSendBill.style.display = 'block';
+    }
+
+    if(this.firestore) {
+      this.firestore
+        .storage
+        .ref(`justificatifs/${fileName}`)
+        .put(file)
+        .then(snapshot => snapshot.ref.getDownloadURL())
+        .then(url => {
+          this.fileUrl = url
+          this.fileName = fileName
+        });
+    }
   }
   handleSubmit = e => {
     e.preventDefault()
