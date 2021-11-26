@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
- import { screen } from "@testing-library/dom"
+ import { screen, fireEvent } from "@testing-library/dom"
  import userEvent from '@testing-library/user-event';
  import { localStorageMock } from '../__mocks__/localStorage';
  import { bills } from "../fixtures/bills.js"
@@ -10,6 +10,24 @@
  import BillsUI from "../views/BillsUI.js"
  import Bills from '../containers/Bills';
  import firebase from '../__mocks__/firebase';
+
+
+ const initPage = (bills = false) => {
+  if (!bills) bills = [];
+  Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+  window.localStorage.setItem('user', JSON.stringify({ type: 'Employee' }));
+  document.body.innerHTML = BillsUI({ data: bills });
+  const onNavigate = (pathname) => { document.body.innerHTML = ROUTES({ pathname })};
+  const allBills = new Bills({
+    document,
+    onNavigate,
+    firestore: null,
+    localStorage: window.localStorage
+  });
+  return allBills;
+};
+
+
  
  const onNavigate = (pathname) => {
    document.body.innerHTML = ROUTES({ pathname })
@@ -105,9 +123,45 @@
        expect(getRequest).toHaveBeenCalledTimes(3)
        expect(screen.getByText(/Erreur 500/)).toBeTruthy()
      })
+     describe('When I click on the new bill button', () => {
+      it('Then the title changes', () => {
+        const allBills = initPage();
+        const handleClickNewBill = jest.fn(allBills.handleClickNewBill);
+        const btnNewBill = screen.getByTestId('btn-new-bill');
+        btnNewBill.addEventListener('click', handleClickNewBill);
+        fireEvent.click(btnNewBill);
+        expect(handleClickNewBill).toHaveBeenCalled();
+        const newTitle = document.querySelector('div.content-title').textContent;
+        expect(newTitle).toBe(' Envoyer une note de frais ');
+      });
+    });
+    describe('When I click on the eye button of the bill', () => {
+      it('Then the modal image should open', () => {
+        const allBills = initPage(bills);
+        $.fn.modal = jest.fn();
+        const iconEye = screen.getAllByTestId('icon-eye')[0];
+        const handleClickIconEye = jest.fn(allBills.handleClickIconEye(iconEye));
+        iconEye.addEventListener('click', handleClickIconEye);
+        fireEvent.click(iconEye);
+        expect(handleClickIconEye).toHaveBeenCalled();
+        const modaleFile = document.querySelector('div.modal-body > div > img');
+        expect(modaleFile).not.toBeUndefined();
+      });
+    });
+    describe('When I click on the close modal', () => {
+      it('Then I modale File should close', () => {
+        const allBills = initPage(bills);
+        $.fn.modal = jest.fn();
+        const iconEye = screen.getAllByTestId('icon-eye')[0];
+        const handleClickIconEye = jest.fn(allBills.handleClickIconEye(iconEye));
+        iconEye.addEventListener('click', handleClickIconEye);
+        fireEvent.click(iconEye);
+        expect(handleClickIconEye).toHaveBeenCalled();
+        const btnClose = document.querySelector('button.close');
+        fireEvent.click(btnClose);
+        const modaleFile = document.querySelector('div#modaleFile').className;
+        expect(modaleFile).toBe('modal fade');
+      });
+    });
    })
  })
- 
-
-
-  
