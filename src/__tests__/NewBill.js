@@ -23,6 +23,22 @@
    });
    return newBill;
  };
+
+ const newBill = {
+  'id': '47qAXb6fIm2zOKkLzMro',
+  'vat': '80',
+  'fileUrl': 'https://firebasestorage.googleapis.com/v0/b/billable-677b6.a…f-1.jpg?alt=media&token=c1640e12-a24b-4b11-ae52-529112e9602a',
+  'status': 'pending',
+  'type': 'Hôtel et logement',
+  'commentary': 'séminaire billed',
+  'name': 'encore',
+  'fileName': 'preview-facture-free-201801-pdf-1.jpg',
+  'date': '2004-04-04',
+  'amount': 400,
+  'commentAdmin': 'ok',
+  'email': 'a@a',
+  'pct': 20
+ };
  
 // Test to check that a new valide file is added to the bill
  describe('Given I am connected as an employee', () => {
@@ -60,21 +76,6 @@
    describe('When a new bill is created', () => {
      it('Then the bill is added to the API POST mock', async () => {
        const getSpyPost = jest.spyOn(firebase, 'post');
-       const newBill = {
-         id: "sample1234567890",
-         status: "refused",
-         pct: 50,
-         amount: 100,
-         email: "sample@test.com",
-         name: "Test bill",
-         vat: "20",
-         fileName: "test12345.png",
-         date: "2021-11-20",
-         commentAdmin: "à valider",
-         commentary: "Test 1",
-         type: "Fournitures",
-         fileUrl: "https://samplesite.com"
-       };
        const bills = await firebase.post(newBill);
        expect(getSpyPost).toHaveBeenCalledTimes(1);
        expect(bills.data[0]).toEqual(newBill);
@@ -92,4 +93,47 @@
        expect(message).toBeTruthy();
      });
    });
+
+   // test d'intégration POST
+  describe("When I create a new bill", () => {
+    const postRequest = jest
+      .fn(firebase.post)
+      .mockImplementationOnce(firebase.post)
+      .mockImplementationOnce(() => Promise.reject(new Error('Erreur 404')))
+      .mockImplementationOnce(() => Promise.reject(new Error('Erreur 500')))
+
+    test("posts bill mock API POST", async () => {
+      const bills = await postRequest(newBill)
+      const { data } = bills
+
+      expect(postRequest).toHaveBeenCalledTimes(1)
+      expect(data.length).toBe(5)
+      expect(data.pop().id).toBe(newBill.id)
+    })
+
+    test("posts bill  mock API POST fails with 404 error message", async () => {
+      let response
+      try {
+        response = await postRequest(newBill)
+      } catch (e) {
+        response = {error: e}
+      }
+      document.body.innerHTML = BillsUI(response)
+      expect(postRequest).toHaveBeenCalledTimes(2)
+      expect(screen.getByText(/Erreur 404/)).toBeTruthy()
+    })
+
+    test("posts bill mock API POST fails with 500 error message", async () => {
+      let response
+      try {
+        response = await postRequest(newBill)
+      } catch (e) {
+        response = {error: e}
+      }
+      document.body.innerHTML = BillsUI(response)
+
+      expect(postRequest).toHaveBeenCalledTimes(3)
+      expect(screen.getByText(/Erreur 500/)).toBeTruthy()
+    })
+  })
  });
