@@ -5,6 +5,7 @@ import LoadingPage from "./LoadingPage.js"
 import Actions from './Actions.js'
 
 const row = (bill) => {
+  // const fileName = bill.fileName !== null ? bill.fileName.slice(0,-4) : "";
   return (`
     <tr>
       <td>${bill.type}</td>
@@ -36,6 +37,7 @@ const row = (bill) => {
 
 
 const rows = (data) => {
+  console.log(data)
   return (data && data.length) ? data.sort((a, b) => ((a.date < b.date) ? 1 : -1)).map(bill => row(bill)).join("") : ""
 }
 

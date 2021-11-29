@@ -86,7 +86,7 @@
        expect(message).toBeTruthy();
      });
      it('Then add bill to API, fails with 500 message error', async () => {
-       firebase.post.mockImplementationOnce(() => Promise.reject(new Error('Erreur 404')));
+       firebase.post.mockImplementationOnce(() => Promise.reject(new Error('Erreur 500')));
        document.body.innerHTML = BillsUI({ error: 'Erreur 500' });
        const message = await screen.getByText(/Erreur 500/);
        expect(message).toBeTruthy();
